@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: hakan
+      MONGO_INITDB_ROOT_PASSWORD: kay1983nar
+      MONGO_INITDB_DATABASE: ingredient
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - product-network
+  kafka:
+    image: product-kafka:latest
+    ports:
+      - 9092:9092
+    networks:
+      - product-network
+  ingredient-api:
+    depends_on:
+      - mongodb
+      - kafka
+    image: hakankaynar/ingredient:latest
+    ports:
+      - 8081:8081
+    networks:
+      - product-network
+networks:
+  product-network:
+    name: product-network
+    attachable: true

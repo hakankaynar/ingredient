@@ -1,0 +1,4 @@
+docker exec -it local_kafka_1 bash
+
+
+./kafka-console-producer.sh  --topic ingredient-topic --bootstrap-server localhost:9092
