@@ -11,7 +11,8 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   data:
     mongodb:
-      host: mongodb
+      host: ingredient_mongodb
+      port: 27027
       username: ingredient_app
       password: in9r3d1Ent!$
       database: ingredient

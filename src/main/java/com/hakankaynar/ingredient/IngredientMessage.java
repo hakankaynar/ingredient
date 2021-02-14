@@ -1,24 +1,26 @@
 package com.hakankaynar.ingredient;
 
 
-public class IngredientDto {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    private String uuid;
+public class IngredientMessage {
+
+    @JsonProperty("ingredient_name")
     private String name;
+
+    @JsonProperty("what_it_does")
     private String whatItDoes;
+
+    @JsonProperty("all_functions")
     private String allFunctions;
+
+    @JsonProperty("cas_ec")
     private String casEc;
+
     private String content;
     private String url;
 
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     public String getName() {
         return name;
@@ -66,19 +68,5 @@ public class IngredientDto {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-
-    public static IngredientDto from (Ingredient ingredient) {
-        IngredientDto ingredientDto = new IngredientDto();
-        ingredientDto.setAllFunctions(ingredient.getAllFunctions());
-        ingredientDto.setName(ingredient.getName());
-        ingredientDto.setUuid(ingredient.getUuid());
-        ingredientDto.setContent(ingredient.getContent());
-        ingredientDto.setUrl(ingredient.getUrl());
-        ingredientDto.setCasEc(ingredient.getCasEc());
-        ingredientDto.setWhatItDoes(ingredientDto.getWhatItDoes());
-
-        return ingredientDto;
     }
 }
