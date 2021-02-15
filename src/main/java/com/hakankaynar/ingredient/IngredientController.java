@@ -4,24 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 public class IngredientController {
 
-    private IngredientRepository ingredientRepository;
+    private IngredientMongoRepository ingredientMongoRepository;
 
-    public IngredientController(@Autowired IngredientRepository ingredientRepository) {
-        this.ingredientRepository = ingredientRepository;
+    public IngredientController(@Autowired IngredientMongoRepository ingredientMongoRepository) {
+        this.ingredientMongoRepository = ingredientMongoRepository;
     }
 
     @GetMapping("/{uuid}")
     public IngredientDto get(String uuid) {
 
-        Ingredient ingredient = ingredientRepository.findByUuid(uuid);
+        IngredientMongo ingredientMongo = ingredientMongoRepository.findByUuid(uuid);
 
-        if (ingredient != null) {
-            IngredientDto ingredientDto = IngredientDto.from(ingredient);
+        if (ingredientMongo != null) {
+            IngredientDto ingredientDto = IngredientDto.from(ingredientMongo);
             return ingredientDto;
         }
 

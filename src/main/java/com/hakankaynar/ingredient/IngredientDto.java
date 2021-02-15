@@ -69,14 +69,14 @@ public class IngredientDto {
     }
 
 
-    public static IngredientDto from (Ingredient ingredient) {
+    public static IngredientDto from (IngredientMongo ingredientMongo) {
         IngredientDto ingredientDto = new IngredientDto();
-        ingredientDto.setAllFunctions(ingredient.getAllFunctions());
-        ingredientDto.setName(ingredient.getName());
-        ingredientDto.setUuid(ingredient.getUuid());
-        ingredientDto.setContent(ingredient.getContent());
-        ingredientDto.setUrl(ingredient.getUrl());
-        ingredientDto.setCasEc(ingredient.getCasEc());
+        ingredientDto.setAllFunctions(ingredientMongo.getAllFunctions());
+        ingredientDto.setName(ingredientMongo.getName());
+        ingredientDto.setUuid(ingredientMongo.getUuid());
+        ingredientDto.setContent(ingredientMongo.getContent());
+        ingredientDto.setUrl(ingredientMongo.getUrl());
+        ingredientDto.setCasEc(ingredientMongo.getCasEc());
         ingredientDto.setWhatItDoes(ingredientDto.getWhatItDoes());
 
         return ingredientDto;

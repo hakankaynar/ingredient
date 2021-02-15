@@ -1,0 +1,14 @@
+docker exec -it local_kafka_1 bash
+
+
+./kafka-console-producer.sh  --topic ingredientMongo-topic --bootstrap-server localhost:9092
+
+
+curl -X POST "localhost:9200/ingredient/_search?pretty" -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "match": {
+      "uuid": "b003b37f-7427-4a75-b734-f3dc0dd1da0e"
+    }
+  }
+}'

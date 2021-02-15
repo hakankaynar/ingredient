@@ -16,3 +16,6 @@ spring:
       username: ingredient_app
       password: in9r3d1Ent!$
       database: ingredient
+    elasticsearch:
+      host: ingredient_elastic
+      port: 9200

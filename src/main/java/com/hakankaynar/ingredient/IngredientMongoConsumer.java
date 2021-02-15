@@ -16,11 +16,14 @@ public class IngredientMongoConsumer {
 
     private final Logger logger = LogManager.getLogger(IngredientMongoConsumer.class);
 
-    private IngredientRepository ingredientRepository;
+    private IngredientMongoRepository ingredientMongoRepository;
+    private IngredientElasticRepository ingredientElasticRepository;
     private ObjectMapper objectMapper;
 
-    public IngredientMongoConsumer(@Autowired IngredientRepository repository) {
-        this.ingredientRepository = repository;
+    public IngredientMongoConsumer(@Autowired IngredientMongoRepository repository,
+                                   @Autowired IngredientElasticRepository elasticRepository) {
+        this.ingredientMongoRepository = repository;
+        this.ingredientElasticRepository = elasticRepository;
 
         this.objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -29,29 +32,48 @@ public class IngredientMongoConsumer {
 
     @KafkaListener(topics = "ingredient-topic", groupId = "com.hakankaynar.ingredient")
     public void consume(String message) throws IOException {
-
         try {
             logger.info(String.format("Got new message -> %s", message));
             IngredientMessage ingredientMessage = objectMapper.readValue(message, IngredientMessage.class);
-            Ingredient fromJson = Ingredient.fromMessage(ingredientMessage);
-            Ingredient fromDb = ingredientRepository.findByName(fromJson.getName());
-            saveOrUpdate(fromJson, fromDb);
-
+            IngredientMongo fromJson = IngredientMongo.fromMessage(ingredientMessage);
+            IngredientMongo fromDb = ingredientMongoRepository.findByName(fromJson.getName());
+            upsertElastic(upsertMongo(fromJson, fromDb));
         } catch (Exception e) {
             logger.info(String.format("#### -> Exception occurred for message -> %s", message), e);
         }
-
     }
 
-    private void saveOrUpdate(Ingredient fromJson, Ingredient fromDb) {
+
+    private IngredientMongo upsertMongo(IngredientMongo fromJson, IngredientMongo fromDb) {
         if (fromDb == null) {
             fromJson.setUuid(UUID.randomUUID().toString());
-            ingredientRepository.save(fromJson);
+            ingredientMongoRepository.save(fromJson);
             logger.info(String.format("Inserted new ingredient -> %s", fromJson.getUuid()));
+            return fromJson;
         } else {
-            ingredientRepository.save(fromDb.updateFields(fromJson));
+            ingredientMongoRepository.save(fromDb.updateFields(fromJson));
             logger.info(String.format("Updated an ingredient -> %s with %s", fromDb.getUuid(), fromJson));
+            return fromDb;
         }
     }
+
+    private IngredientElasticSearch upsertElastic(IngredientMongo fromMongoDb) {
+        removeIfExisting(fromMongoDb);
+        return ingredientElasticRepository.save(IngredientElasticSearch.from(fromMongoDb));
+    }
+
+    private void removeIfExisting(IngredientMongo fromMongoDb) {
+
+        try{
+            IngredientElasticSearch fromEsDb = ingredientElasticRepository.findByUuid(fromMongoDb.getUuid());
+            if (fromEsDb!=null) {
+                ingredientElasticRepository.delete(fromEsDb);
+            }
+        }catch (Exception e) {
+            logger.info("Problem while removing existing es instance", e);
+        }
+
+    }
+
 
 }

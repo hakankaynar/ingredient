@@ -1,20 +1,18 @@
 package com.hakankaynar.ingredient;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
-@Document("ingredient")
-public class Ingredient {
+
+@Document(indexName = "ingredient")
+public class IngredientElasticSearch {
 
     @Id
     private String id;
 
-    @Indexed(unique = true)
     private String uuid;
 
-    @Indexed(unique = true)
     @Field("ingredient_name")
     private String name;
 
@@ -108,23 +106,16 @@ public class Ingredient {
                 '}';
     }
 
-    public static Ingredient fromMessage(IngredientMessage ingredientMessage) {
-        Ingredient ingredient = new Ingredient();
-        ingredient.setName(ingredientMessage.getName());
-        ingredient.setAllFunctions(ingredientMessage.getAllFunctions());
-        ingredient.setContent(ingredientMessage.getContent());
-        ingredient.setCasEc(ingredientMessage.getCasEc());
-        ingredient.setWhatItDoes(ingredientMessage.getWhatItDoes());
-        ingredient.setUrl(ingredientMessage.getUrl());
-        return ingredient;
+    public static IngredientElasticSearch from(IngredientMongo ingredientMongo) {
+        IngredientElasticSearch ingredientElasticSearch = new IngredientElasticSearch();
+        ingredientElasticSearch.setName(ingredientMongo.getName());
+        ingredientElasticSearch.setAllFunctions(ingredientMongo.getAllFunctions());
+        ingredientElasticSearch.setContent(ingredientMongo.getContent());
+        ingredientElasticSearch.setCasEc(ingredientMongo.getCasEc());
+        ingredientElasticSearch.setWhatItDoes(ingredientMongo.getWhatItDoes());
+        ingredientElasticSearch.setUrl(ingredientMongo.getUrl());
+        ingredientElasticSearch.setUuid(ingredientMongo.getUuid());
+        return ingredientElasticSearch;
     }
 
-    public Ingredient updateFields(Ingredient newIngredient) {
-        setAllFunctions(newIngredient.getAllFunctions());
-        setContent(newIngredient.getContent());
-        setCasEc(newIngredient.getCasEc());
-        setWhatItDoes(newIngredient.getWhatItDoes());
-        setUrl(newIngredient.getUrl());
-        return this;
-    }
 }

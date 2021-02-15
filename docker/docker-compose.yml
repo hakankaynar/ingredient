@@ -16,9 +16,21 @@ services:
     networks:
       - product-network
 
+  ingredient_elastic:
+    image: elasticsearch:7.10.1
+    hostname: ingredient_elastic
+    ports:
+      - 9200:9200
+    environment:
+      node.name: elasticsearch
+      discovery.type: single-node
+    networks:
+      - product-network
+
   ingredient-api:
     depends_on:
       - ingredient_mongodb
+      - ingredient_elastic
     image: hakankaynar/ingredient:latest
     ports:
       - 8081:8081
